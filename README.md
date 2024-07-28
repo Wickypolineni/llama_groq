@@ -25,7 +25,7 @@ To run Batman GPT locally, follow these steps:
 
 1. **Clone the repository:**
    ```bash
-   [git clone https://github.com/your-username/batman-gpt.git](https://github.com/Wickypolineni/llama_groq)
+   git clone https://github.com/Wickypolineni/llama_groq.git
    cd llama_groq
    ```
 
