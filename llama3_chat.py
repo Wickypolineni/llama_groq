@@ -4,8 +4,9 @@ from groq import Groq
 import base64
 from io import BytesIO
 from PIL import Image
+import random
 
-st.set_page_config(page_icon="🦇", layout="wide", page_title="LLAMA x Bat GPT")
+st.set_page_config(page_icon="🦇", layout="wide", page_title="Batman GPT")
 
 def icon(image_path: str):
     """Displays an image at the top center of the app."""
@@ -20,13 +21,13 @@ def get_image_base64(image_path):
     image.save(buffered, format="JPEG")
     return base64.b64encode(buffered.getvalue()).decode()
 
-# Update the image path to use a relative path
-image_path = "./assests/llama_bat.jpeg"
+# Update the image path to use a Batman-themed image
+image_path = "./assets/batman_icon.jpeg"  # Make sure to replace with an actual Batman image
 image_base64 = get_image_base64(image_path)
 
 icon(image_base64)
 
-st.subheader("LLAMA x Bat GPT", divider="rainbow", anchor=False)
+st.subheader("Batman GPT", divider="rainbow", anchor=False)
 
 # API key input
 api_key = st.text_input("Enter your Groq API Key:", type="password")
@@ -41,7 +42,7 @@ if api_key:
     if "selected_model" not in st.session_state:
         st.session_state.selected_model = None
 
-    # Define model details
+    # Define model details (unchanged)
     models = {
         "gemma-7b-it": {"name": "Gemma-7b-it", "tokens": 8192, "developer": "Google"},
         "llama2-70b-4096": {"name": "LLaMA2-70b-chat", "tokens": 4096, "developer": "Meta"},
@@ -50,7 +51,7 @@ if api_key:
         "mixtral-8x7b-32768": {"name": "Mixtral-8x7b-Instruct-v0.1", "tokens": 32768, "developer": "Mistral"},
     }
 
-    # Layout for model selection and max_tokens slider
+    # Layout for model selection and max_tokens slider (unchanged)
     col1, col2 = st.columns(2)
 
     with col1:
@@ -69,12 +70,10 @@ if api_key:
     max_tokens_range = models[model_option]["tokens"]
 
     with col2:
-        # Adjust max_tokens slider dynamically based on the selected model
         max_tokens = st.slider(
             "Max Tokens:",
-            min_value=512,  # Minimum value to allow some flexibility
+            min_value=512,
             max_value=max_tokens_range,
-            # Default value or max allowed if less
             value=min(32768, max_tokens_range),
             step=512,
             help=f"Adjust the maximum number of tokens (words) for the model's response. Max for selected model: {max_tokens_range}"
@@ -82,7 +81,7 @@ if api_key:
 
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:
-        avatar = f'data:image/jpeg;base64,{image_base64}' if message["role"] == "assistant" else '👨‍💻'
+        avatar = f'data:image/jpeg;base64,{image_base64}' if message["role"] == "assistant" else '👤'
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
@@ -92,10 +91,23 @@ if api_key:
             if chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
-    if prompt := st.chat_input("Enter your prompt here..."):
+    def batman_style(response: str) -> str:
+        """Convert the response to Batman style."""
+        batman_phrases = [
+            "I am vengeance. ",
+            "I am the night. ",
+            "I'm Batman. ",
+            "The Dark Knight speaks: ",
+            "From the shadows, I say: ",
+            "Justice demands that ",
+            "Gotham's guardian declares: ",
+        ]
+        return random.choice(batman_phrases) + response
+
+    if prompt := st.chat_input("Speak, citizen of Gotham..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        with st.chat_message("user", avatar='👨‍💻'):
+        with st.chat_message("user", avatar='👤'):
             st.markdown(prompt)
 
         # Fetch response from Groq API
@@ -108,7 +120,7 @@ if api_key:
                         "content": m["content"]
                     }
                     for m in st.session_state.messages
-                ],
+                ] + [{"role": "system", "content": "You are Batman, the Dark Knight of Gotham. Respond in a manner befitting the caped crusader - brooding, intense, and focused on justice."}],
                 max_tokens=max_tokens,
                 stream=True
             )
@@ -122,12 +134,14 @@ if api_key:
 
         # Append the full response to session_state.messages
         if isinstance(full_response, str):
+            batman_response = batman_style(full_response)
             st.session_state.messages.append(
-                {"role": "assistant", "content": full_response})
+                {"role": "assistant", "content": batman_response})
         else:
             # Handle the case where full_response is not a string
             combined_response = "\n".join(str(item) for item in full_response)
+            batman_response = batman_style(combined_response)
             st.session_state.messages.append(
-                {"role": "assistant", "content": combined_response})
+                {"role": "assistant", "content": batman_response})
 else:
-    st.warning("Please enter your Groq API Key to start using the app.")
+    st.warning("Enter the Groq API Key to access the Batcomputer, citizen.")
