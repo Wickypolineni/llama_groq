@@ -21,7 +21,7 @@ def get_image_base64(image_path):
     return base64.b64encode(buffered.getvalue()).decode()
 
 # Update the image path to use a relative path
-image_path = "./assests/llama_bat.jpeg"
+image_path = "./assets/llama_bat.jpeg"
 image_base64 = get_image_base64(image_path)
 
 icon(image_base64)
@@ -98,6 +98,15 @@ if api_key:
         with st.chat_message("user", avatar='👨‍💻'):
             st.markdown(prompt)
 
+        # Set a system message to act as Batman
+        system_message = {
+            "role": "system",
+            "content": "You are Batman, the Dark Knight. Respond to all prompts with the persona and style of Batman."
+        }
+
+        # Prepare messages with the system message first
+        chat_messages = [system_message] + st.session_state.messages
+
         # Fetch response from Groq API
         try:
             chat_completion = client.chat.completions.create(
@@ -107,7 +116,7 @@ if api_key:
                         "role": m["role"],
                         "content": m["content"]
                     }
-                    for m in st.session_state.messages
+                    for m in chat_messages
                 ],
                 max_tokens=max_tokens,
                 stream=True
