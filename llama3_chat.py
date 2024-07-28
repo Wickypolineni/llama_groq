@@ -21,13 +21,15 @@ def get_image_base64(image_path):
     image.save(buffered, format="JPEG")
     return base64.b64encode(buffered.getvalue()).decode()
 
-# Update the image path to use a Batman-themed image
-image_path = "./assets/batman_icon.jpeg"  # Make sure to replace with an actual Batman image
+# Corrected image path
+image_path = "./assests/llama_bat.jpeg"
 image_base64 = get_image_base64(image_path)
 
 icon(image_base64)
 
 st.subheader("Batman GPT", divider="rainbow", anchor=False)
+
+# Rest of the code remains the same...
 
 # API key input
 api_key = st.text_input("Enter your Groq API Key:", type="password")
@@ -42,7 +44,7 @@ if api_key:
     if "selected_model" not in st.session_state:
         st.session_state.selected_model = None
 
-    # Define model details (unchanged)
+    # Define model details
     models = {
         "gemma-7b-it": {"name": "Gemma-7b-it", "tokens": 8192, "developer": "Google"},
         "llama2-70b-4096": {"name": "LLaMA2-70b-chat", "tokens": 4096, "developer": "Meta"},
@@ -51,7 +53,7 @@ if api_key:
         "mixtral-8x7b-32768": {"name": "Mixtral-8x7b-Instruct-v0.1", "tokens": 32768, "developer": "Mistral"},
     }
 
-    # Layout for model selection and max_tokens slider (unchanged)
+    # Layout for model selection and max_tokens slider
     col1, col2 = st.columns(2)
 
     with col1:
