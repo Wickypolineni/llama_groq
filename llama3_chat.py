@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from typing import Generator
 from groq import Groq
 import base64
@@ -7,6 +8,28 @@ from PIL import Image
 import random
 
 st.set_page_config(page_icon="🦇", layout="wide", page_title="Batman GPT")
+
+
+def add_google_analytics():
+    tracking_id = "G-6L2E2Z7Z64"
+    if tracking_id:  # Check if the tracking ID is available
+        ga_code = f"""
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={tracking_id}"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){{dataLayer.push(arguments);}}
+          gtag('js', new Date());
+          gtag('config', '{tracking_id}');
+        </script>
+        """
+        components.html(ga_code, height=0)
+    else:
+        st.warning("Google Analytics tracking ID is not set in the .env file.")
+
+# Call the function to add Google Analytics
+add_google_analytics()
+
 
 def icon(image_path: str):
     """Displays an image at the top center of the app."""
